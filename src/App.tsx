@@ -12,13 +12,15 @@ function Login() {
   const { setUser, setCurrentPage } = useContext(AppContext);
 
   const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginRole, setLoginRole] = useState<'Admin' | 'Scanner'>('Scanner');
 
   const handleLogin = () => {
-    if (!loginEmail) {
-      alert('Please enter your email');
+    if (!loginEmail || !loginPassword) {
+      alert('Please enter both email and password');
       return;
     }
+    // For now, we just store user in context (later will call backend)
     setUser({ email: loginEmail, role: loginRole });
     setCurrentPage(loginRole === 'Admin' ? 'admin-dashboard' : 'scanner-scan');
     alert('Login successful!');
@@ -33,7 +35,12 @@ function Login() {
         value={loginEmail}
         onChange={(e) => setLoginEmail(e.target.value)}
       />
-      <br />
+      <label>Password:</label>
+      <input
+        type="password"
+        value={loginPassword}
+        onChange={(e) => setLoginPassword(e.target.value)}
+      />
       <label>Role:</label>
       <select
         value={loginRole}
@@ -42,8 +49,66 @@ function Login() {
         <option value="Admin">Admin</option>
         <option value="Scanner">Scanner</option>
       </select>
-      <br />
       <button onClick={handleLogin}>Login</button>
+      <br />
+      <br />
+      <button onClick={() => setCurrentPage('signup')}>Go to Signup</button>
+    </div>
+  );
+}
+
+function Signup() {
+  const { setUser, setCurrentPage } = useContext(AppContext);
+
+  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupRole, setSignupRole] = useState<'Admin' | 'Scanner'>('Scanner');
+
+  const handleSignup = () => {
+    if (!signupName || !signupEmail || !signupPassword) {
+      alert('Please enter all required fields');
+      return;
+    }
+
+    // For now, we just show success message (later will call backend /signup)
+    alert('Account created! You can now log in.');
+    setCurrentPage('login');
+  };
+
+  return (
+    <div className="container">
+      <h2>Signup</h2>
+      <label>Name:</label>
+      <input
+        type="text"
+        value={signupName}
+        onChange={(e) => setSignupName(e.target.value)}
+      />
+      <label>Email:</label>
+      <input
+        type="email"
+        value={signupEmail}
+        onChange={(e) => setSignupEmail(e.target.value)}
+      />
+      <label>Password:</label>
+      <input
+        type="password"
+        value={signupPassword}
+        onChange={(e) => setSignupPassword(e.target.value)}
+      />
+      <label>Role:</label>
+      <select
+        value={signupRole}
+        onChange={(e) => setSignupRole(e.target.value as 'Admin' | 'Scanner')}
+      >
+        <option value="Admin">Admin</option>
+        <option value="Scanner">Scanner</option>
+      </select>
+      <button onClick={handleSignup}>Sign Up</button>
+      <br />
+      <br />
+      <button onClick={() => setCurrentPage('login')}>Back to Login</button>
     </div>
   );
 }
@@ -78,6 +143,7 @@ export default function App() {
   };
 
   const renderPage = () => {
+    if (currentPage === 'signup') return <Signup />;
     if (!user) return <Login />;
     if (user.role === 'Admin') return <AdminDashboard />;
     else return <ScannerScan />;
