@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenubutton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
 import { Badge } from './components/ui/badge';
@@ -210,9 +210,9 @@ function Login() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleLogin} className="w-full">
+        <button className="btn" onClick={handleLogin} className="w-full">
           Login
-        </Button>
+        </button>
       </CardContent>
     </Card>
   );
@@ -258,9 +258,9 @@ function Login() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleSignup} className="w-full">
+        <button onClick={handleSignup} className="w-full">
           Sign Up
-        </Button>
+        </button>
       </CardContent>
     </Card>
   );
@@ -305,13 +305,13 @@ function AdminSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
+                  <SidebarMenubutton
                     onClick={() => setCurrentPage(item.id)}
                     isActive={currentPage === item.id}
                   >
                     <item.icon className="w-4 h-4" />
                     <span>{item.label}</span>
-                  </SidebarMenuButton>
+                  </SidebarMenubutton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -333,14 +333,14 @@ function AdminDashboard() {
       <div className="flex items-center justify-between">
         <h1>Admin Dashboard</h1>
         <div className="flex gap-2">
-          <Button>
+          <button>
             <Plus className="w-4 h-4 mr-2" />
             Create QR Code
-          </Button>
-          <Button variant="outline">
+          </button>
+          <button variant="outline">
             <UserCog className="w-4 h-4 mr-2" />
             Adjust Points
-          </Button>
+          </button>
         </div>
       </div>
       
@@ -451,13 +451,13 @@ function UsersManagement() {
                 <TableCell>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button 
+                      <button 
                         variant="outline" 
                         size="sm"
                         onClick={() => setSelectedUser(user)}
                       >
                         Adjust Points
-                      </Button>
+                      </button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -485,9 +485,9 @@ function UsersManagement() {
                             onChange={(e) => setPointsAmount(e.target.value)}
                           />
                         </div>
-                        <Button onClick={handleAdjustPoints} className="w-full">
+                        <button onClick={handleAdjustPoints} className="w-full">
                           Submit
-                        </Button>
+                        </button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -556,10 +556,10 @@ function QRCodesManagement() {
           </Select>
           <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
             <DialogTrigger asChild>
-              <Button>
+              <button>
                 <Plus className="w-4 h-4 mr-2" />
                 Create QR Code
-              </Button>
+              </button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -604,9 +604,9 @@ function QRCodesManagement() {
                     onChange={(e) => setNewQRCode({...newQRCode, points: parseInt(e.target.value) || 0})}
                   />
                 </div>
-                <Button onClick={handleCreateQRCode} className="w-full">
+                <button onClick={handleCreateQRCode} className="w-full">
                   Create
-                </Button>
+                </button>
               </div>
             </DialogContent>
           </Dialog>
@@ -705,10 +705,10 @@ function ScannerScan() {
                 onChange={(e) => setQrCodeId(e.target.value)}
               />
             </div>
-            <Button onClick={handleScan} className="w-full">
+            <button onClick={handleScan} className="w-full">
               <Scan className="w-4 h-4 mr-2" />
               Scan
-            </Button>
+            </button>
           </CardContent>
         </Card>
 
@@ -788,23 +788,23 @@ function ScannerNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card border-t">
       <div className="flex">
-        <Button
+        <button
           variant={currentPage === 'scanner-scan' ? 'default' : 'ghost'}
           className="flex-1 rounded-none h-16"
           onClick={() => setCurrentPage('scanner-scan')}
         >
           <Scan className="w-5 h-5 mb-1" />
           <span className="text-xs">Scan</span>
-        </Button>
-        <Button
+        </button>
+        <button
           variant={currentPage === 'scanner-points' ? 'default' : 'ghost'}
           className="flex-1 rounded-none h-16"
           onClick={() => setCurrentPage('scanner-points')}
         >
           <Star className="w-5 h-5 mb-1" />
           <span className="text-xs">Points</span>
-        </Button>
-        <Button
+        </button>
+        <button
           variant="ghost"
           className="flex-1 rounded-none h-16"
           onClick={() => {
@@ -813,7 +813,7 @@ function ScannerNav() {
           }}
         >
           <span className="text-xs">Logout</span>
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -830,14 +830,14 @@ function Header() {
           <h2>QR Points System</h2>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <button
             variant="ghost"
             size="sm"
             onClick={() => setDarkMode(!darkMode)}
           >
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-          <Button
+          </button>
+          <button
             variant="ghost"
             size="sm"
             onClick={() => {
@@ -846,7 +846,7 @@ function Header() {
             }}
           >
             Logout
-          </Button>
+          </button>
         </div>
       </div>
     </header>
