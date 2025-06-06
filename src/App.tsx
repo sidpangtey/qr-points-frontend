@@ -1,8 +1,12 @@
 import React, { useState, createContext, useContext } from 'react';
 
-// Context & Types (same as before — keep your existing context and types)
-
-// MOCK DATA (keep your existing mockUsers and mockQRCodes)
+// Context definition
+const AppContext = createContext({
+  user: null as any,
+  setUser: (user: any) => {},
+  currentPage: 'login',
+  setCurrentPage: (page: string) => {}
+});
 
 function Login() {
   const { setUser, setCurrentPage } = useContext(AppContext);
@@ -21,7 +25,7 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="container">
       <h2>Login</h2>
       <label>Email:</label>
       <input
@@ -46,7 +50,7 @@ function Login() {
 
 function AdminDashboard() {
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="container">
       <h2>Admin Dashboard</h2>
       <p>Basic dashboard - more coming soon!</p>
     </div>
@@ -55,20 +59,12 @@ function AdminDashboard() {
 
 function ScannerScan() {
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="container">
       <h2>Scanner - Scan Page</h2>
       <p>Basic scanner page - more coming soon!</p>
     </div>
   );
 }
-
-// Context definition
-const AppContext = createContext({
-  user: null as any,
-  setUser: (user: any) => {},
-  currentPage: 'login',
-  setCurrentPage: (page: string) => {}
-});
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -89,7 +85,7 @@ export default function App() {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <div style={{ minHeight: '100vh', padding: '20px' }}>
+      <div style={{ minHeight: '100vh', padding: '20px', backgroundColor: '#f9f9f9' }}>
         {renderPage()}
       </div>
     </AppContext.Provider>
