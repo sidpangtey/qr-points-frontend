@@ -194,6 +194,10 @@ function AdminDashboard() {
       {loading && <p>Loading users...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
+       <button onClick={() => setCurrentPage('admin-qrcodes')} style={{ marginBottom: '1rem' }}>
+        View QR Codes
+      </button>
+
       <table border={1} cellPadding={8} style={{ width: '100%', marginTop: '20px' }}>
         <thead>
           <tr>
@@ -217,6 +221,73 @@ function AdminDashboard() {
     </div>
   );
 }
+
+function AdminQRCodes() {
+  const { user } = useContext(AppContext);
+  const [qrCodes, setQrCodes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const API_BASE = 'https://qr-point-system.onrender.com';
+
+  const fetchQRCodes = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/qrcodes`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch QR Codes');
+      }
+
+      setQrCodes(data);
+      setLoading(false);
+    } catch (err: any) {
+      console.error('Error fetching QR Codes:', err.message);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchQRCodes();
+  }, []);
+
+  return (
+    <div className="container">
+      <h2>QR Codes</h2>
+
+      {loading && <p>Loading QR Codes...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      <table border={1} cellPadding={8} style={{ width: '100%', marginTop: '20px' }}>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>QR Code ID</th>
+            <th>Tags</th>
+            <th>Give To</th>
+            <th>Points</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {qrCodes.map((qr: any) => (
+            <tr key={qr._id}>
+              <td>{qr.name}</td>
+              <td>{qr.qrCodeId}</td>
+              <td>{qr.tags?.join(', ')}</td>
+              <td>{qr.giveTo}</td>
+              <td>{qr.points}</td>
+              <td>{qr.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 
 function ScannerScan() {
   const { user } = useContext(AppContext);
@@ -282,6 +353,73 @@ function ScannerScan() {
     </div>
   );
 }
+
+function AdminQRCodes() {
+  const { user } = useContext(AppContext);
+  const [qrCodes, setQrCodes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const API_BASE = 'https://qr-point-system.onrender.com';
+
+  const fetchQRCodes = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/qrcodes`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch QR Codes');
+      }
+
+      setQrCodes(data);
+      setLoading(false);
+    } catch (err: any) {
+      console.error('Error fetching QR Codes:', err.message);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchQRCodes();
+  }, []);
+
+  return (
+    <div className="container">
+      <h2>QR Codes</h2>
+
+      {loading && <p>Loading QR Codes...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      <table border={1} cellPadding={8} style={{ width: '100%', marginTop: '20px' }}>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>QR Code ID</th>
+            <th>Tags</th>
+            <th>Give To</th>
+            <th>Points</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {qrCodes.map((qr: any) => (
+            <tr key={qr._id}>
+              <td>{qr.name}</td>
+              <td>{qr.qrCodeId}</td>
+              <td>{qr.tags?.join(', ')}</td>
+              <td>{qr.giveTo}</td>
+              <td>{qr.points}</td>
+              <td>{qr.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 
 
 export default function App() {
