@@ -8,6 +8,8 @@ const AppContext = createContext({
   setCurrentPage: (page: string) => {}
 });
 
+const API_BASE = 'https://qr-point-system.onrender.com';
+
 function Login() {
   const { setUser, setCurrentPage } = useContext(AppContext);
 
@@ -15,15 +17,35 @@ function Login() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginRole, setLoginRole] = useState<'Admin' | 'Scanner'>('Scanner');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
       alert('Please enter both email and password');
       return;
     }
-    // For now, we just store user in context (later will call backend)
-    setUser({ email: loginEmail, role: loginRole });
-    setCurrentPage(loginRole === 'Admin' ? 'admin-dashboard' : 'scanner-scan');
-    alert('Login successful!');
+
+    try {
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Success → set user and navigate
+      setUser({ email: data.user.email, role: data.user.role });
+      setCurrentPage(data.user.role === 'admin' ? 'admin-dashboard' : 'scanner-scan');
+      alert('Login successful!');
+    } catch (err: any) {
+      alert(`Login error: ${err.message}`);
+    }
   };
 
   return (
@@ -58,22 +80,42 @@ function Login() {
 }
 
 function Signup() {
-  const { setUser, setCurrentPage } = useContext(AppContext);
+  const { setCurrentPage } = useContext(AppContext);
 
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupRole, setSignupRole] = useState<'Admin' | 'Scanner'>('Scanner');
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!signupName || !signupEmail || !signupPassword) {
       alert('Please enter all required fields');
       return;
     }
 
-    // For now, we just show success message (later will call backend /signup)
-    alert('Account created! You can now log in.');
-    setCurrentPage('login');
+    try {
+      const response = await fetch(`${API_BASE}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: signupName,
+          email: signupEmail,
+          password: signupPassword,
+          role: signupRole.toLowerCase() // Backend expects 'admin' | 'scanner'
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      alert('Account created! You can now log in.');
+      setCurrentPage('login');
+    } catch (err: any) {
+      alert(`Signup error: ${err.message}`);
+    }
   };
 
   return (
@@ -145,7 +187,7 @@ export default function App() {
   const renderPage = () => {
     if (currentPage === 'signup') return <Signup />;
     if (!user) return <Login />;
-    if (user.role === 'Admin') return <AdminDashboard />;
+    if (user.role === 'admin') return <AdminDashboard />;
     else return <ScannerScan />;
   };
 
