@@ -194,7 +194,7 @@ function AdminDashboard() {
       {loading && <p>Loading users...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
-      <table border="1" cellPadding="8" style={{ width: '100%', marginTop: '20px' }}>
+      <table border={1} cellPadding={8} style={{ width: '100%', marginTop: '20px' }}>
         <thead>
           <tr>
             <th>Name</th>
