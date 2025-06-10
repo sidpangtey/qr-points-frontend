@@ -156,46 +156,130 @@ function Signup() {
 }
 
 function AdminDashboard() {
+  const { user } = useContext(AppContext);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const API_BASE = 'https://qr-point-system.onrender.com';
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/users`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch users');
+      }
+
+      setUsers(data);
+      setLoading(false);
+    } catch (err: any) {
+      console.error('Error fetching users:', err.message);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // Fetch users on mount
+  React.useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
     <div className="container">
       <h2>Admin Dashboard</h2>
-      <p>Basic dashboard - more coming soon!</p>
+
+      {loading && <p>Loading users...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      <table border="1" cellPadding="8" style={{ width: '100%', marginTop: '20px' }}>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <tr key={u._id}>
+              <td>{u.name}</td>
+              <td>{u.email}</td>
+              <td>{u.role}</td>
+              <td>{u.points}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
 
 function ScannerScan() {
+  const { user } = useContext(AppContext);
+  const [qrCodeId, setQrCodeId] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const API_BASE = 'https://qr-point-system.onrender.com';
+
+  const handleScan = async () => {
+    if (!qrCodeId) {
+      alert('Please enter a QR Code ID');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      setMessage('');
+
+      const response = await fetch(`${API_BASE}/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qrCodeId: qrCodeId,
+          scannerEmail: user.email
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Scan failed');
+      }
+
+      setMessage(data.message || 'Scan successful!');
+      setQrCodeId('');
+    } catch (err: any) {
+      console.error('Scan error:', err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container">
       <h2>Scanner - Scan Page</h2>
-      <p>Basic scanner page - more coming soon!</p>
+
+      <label>Enter QR Code ID:</label>
+      <input
+        type="text"
+        value={qrCodeId}
+        onChange={(e) => setQrCodeId(e.target.value)}
+      />
+      <button onClick={handleScan} disabled={loading}>
+        {loading ? 'Scanning...' : 'Scan'}
+      </button>
+
+      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
     </div>
   );
 }
 
-export default function App() {
-  const [user, setUser] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState('login');
-
-  const contextValue = {
-    user,
-    setUser,
-    currentPage,
-    setCurrentPage
-  };
-
-  const renderPage = () => {
-    if (currentPage === 'signup') return <Signup />;
-    if (!user) return <Login />;
-    if (user.role === 'admin') return <AdminDashboard />;
-    else return <ScannerScan />;
-  };
-
-  return (
-    <AppContext.Provider value={contextValue}>
-      <div style={{ minHeight: '100vh', padding: '20px', backgroundColor: '#f9f9f9' }}>
-        {renderPage()}
-      </div>
-    </AppContext.Provider>
-  );
-}
