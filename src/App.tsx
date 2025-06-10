@@ -368,12 +368,25 @@ export default function App() {
     setCurrentPage
   };
 
-  const renderPage = () => {
-    if (currentPage === 'signup') return <Signup />;
-    if (!user) return <Login />;
-    if (user.role === 'admin') return <AdminDashboard />;
-    else return <ScannerScan />;
-  };
+const renderPage = () => {
+  // If user is not logged in
+  if (currentPage === 'signup') return <Signup />;
+  if (!user) return <Login />;
+
+  // Admin flow
+  if (user.role === 'admin') {
+    if (currentPage === 'admin-dashboard') return <AdminDashboard />;
+    if (currentPage === 'admin-qrcodes') return <AdminQRCodes />;
+  }
+
+  // Scanner flow
+  if (user.role === 'scanner') {
+    return <ScannerScan />;
+  }
+
+  // Default fallback (should not happen)
+  return <Login />;
+};
 
   return (
     <AppContext.Provider value={contextValue}>
