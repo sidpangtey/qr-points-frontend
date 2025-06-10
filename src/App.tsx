@@ -290,10 +290,15 @@ function ScannerScan() {
 }
 
 function AdminQRCodes() {
-  const { user } = useContext(AppContext);
   const [qrCodes, setQrCodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState('');
+  const [tags, setTags] = useState('');
+  const [giveTo, setGiveTo] = useState<'owner' | 'scanner' | 'both'>('both');
+  const [points, setPoints] = useState<number>(0);
 
   const API_BASE = 'https://qr-point-system.onrender.com';
 
@@ -316,13 +321,83 @@ function AdminQRCodes() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchQRCodes();
   }, []);
+
+  const handleCreateQRCode = async () => {
+    if (!name) {
+      alert('Please enter QR Code name');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/qrcodes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          tags: tags.split(',').map(tag => tag.trim()),
+          giveTo,
+          points
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create QR Code');
+      }
+
+      alert('QR Code created successfully!');
+      // Clear form
+      setName('');
+      setTags('');
+      setGiveTo('both');
+      setPoints(0);
+      setShowForm(false);
+
+      // Refresh list
+      fetchQRCodes();
+
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
 
   return (
     <div className="container">
       <h2>QR Codes</h2>
+
+      {/* Create QR Code button */}
+      <button onClick={() => setShowForm(!showForm)} style={{ marginBottom: '1rem' }}>
+        {showForm ? 'Hide Create Form' : 'Create QR Code'}
+      </button>
+
+      {/* Create QR Code form */}
+      {showForm && (
+        <div style={{ marginBottom: '1rem', border: '1px solid #ccc', padding: '1rem' }}>
+          <h3>Create New QR Code</h3>
+          <label>Name:</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+
+          <label>Tags (comma-separated):</label>
+          <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
+
+          <label>Give To:</label>
+          <select value={giveTo} onChange={(e) => setGiveTo(e.target.value as 'owner' | 'scanner' | 'both')}>
+            <option value="owner">Owner</option>
+            <option value="scanner">Scanner</option>
+            <option value="both">Both</option>
+          </select>
+
+          <label>Points:</label>
+          <input type="number" value={points} onChange={(e) => setPoints(Number(e.target.value))} />
+
+          <br />
+          <button onClick={handleCreateQRCode}>Submit</button>
+        </div>
+      )}
 
       {loading && <p>Loading QR Codes...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -354,6 +429,7 @@ function AdminQRCodes() {
     </div>
   );
 }
+
 
 
 
