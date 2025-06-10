@@ -156,6 +156,7 @@ function Signup() {
 }
 
 function AdminDashboard() {
+  const { setCurrentPage } = useContext(AppContext);
   const { user } = useContext(AppContext);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
