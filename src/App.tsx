@@ -283,3 +283,30 @@ function ScannerScan() {
   );
 }
 
+
+export default function App() {
+  const [user, setUser] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState('login');
+
+  const contextValue = {
+    user,
+    setUser,
+    currentPage,
+    setCurrentPage
+  };
+
+  const renderPage = () => {
+    if (currentPage === 'signup') return <Signup />;
+    if (!user) return <Login />;
+    if (user.role === 'admin') return <AdminDashboard />;
+    else return <ScannerScan />;
+  };
+
+  return (
+    <AppContext.Provider value={contextValue}>
+      <div style={{ minHeight: '100vh', padding: '20px', backgroundColor: '#f9f9f9' }}>
+        {renderPage()}
+      </div>
+    </AppContext.Provider>
+  );
+}
