@@ -430,6 +430,35 @@ function AdminQRCodes() {
   );
 }
 
+function AdminNavBar() {
+  const { setCurrentPage, setUser } = useContext(AppContext);
+
+  return (
+    <div style={{
+      background: '#333',
+      color: '#fff',
+      padding: '10px',
+      marginBottom: '20px',
+      display: 'flex',
+      gap: '10px'
+    }}>
+      <button onClick={() => setCurrentPage('admin-dashboard')} style={{ color: 'white' }}>
+        Dashboard
+      </button>
+      <button onClick={() => setCurrentPage('admin-qrcodes')} style={{ color: 'white' }}>
+        QR Codes
+      </button>
+      <button onClick={() => {
+        setUser(null);
+        setCurrentPage('login');
+      }} style={{ marginLeft: 'auto', color: 'white' }}>
+        Logout
+      </button>
+    </div>
+  );
+}
+
+
 
 
 
@@ -451,8 +480,13 @@ const renderPage = () => {
 
   // Admin flow
   if (user.role === 'admin') {
-    if (currentPage === 'admin-dashboard') return <AdminDashboard />;
-    if (currentPage === 'admin-qrcodes') return <AdminQRCodes />;
+    return (
+      <div>
+        <AdminNavBar />   {/* Add the AdminNavBar here */}
+        {currentPage === 'admin-dashboard' && <AdminDashboard />}
+        {currentPage === 'admin-qrcodes' && <AdminQRCodes />}
+      </div>
+    );
   }
 
   // Scanner flow
@@ -463,6 +497,7 @@ const renderPage = () => {
   // Default fallback (should not happen)
   return <Login />;
 };
+
 
   return (
     <AppContext.Provider value={contextValue}>
