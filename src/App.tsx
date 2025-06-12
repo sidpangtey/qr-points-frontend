@@ -487,6 +487,7 @@ function AdminQRCodes() {
 }
 
 
+
 function AdminNavBar() {
   const { setCurrentPage, setUser } = useContext(AppContext);
 
