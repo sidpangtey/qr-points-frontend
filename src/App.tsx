@@ -533,14 +533,17 @@ function ScannerPoints() {
 
 
 export default function App() {
+  const [scanHistory, setScanHistory] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState('login');
 
   const contextValue = {
-    user,
-    setUser,
-    currentPage,
-    setCurrentPage
+   user,
+  setUser,
+  currentPage,
+  setCurrentPage,
+  scanHistory,
+  setScanHistory
   };
 
 const renderPage = () => {
