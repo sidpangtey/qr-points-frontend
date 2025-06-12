@@ -489,14 +489,50 @@ function ScannerNavBar() {
 }
 
 function ScannerPoints() {
-  const { scanHistory, user } = useContext(AppContext);
+  const { user, scanHistory, setScanHistory } = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Calculate total points
+  const API_BASE = 'https://qr-point-system.onrender.com';
+
+  useEffect(() => {
+    const fetchScans = async () => {
+      try {
+        if (!user?.email) {
+          setError('No user email found');
+          return;
+        }
+
+        setLoading(true);
+        const response = await fetch(`${API_BASE}/scans?scannerEmail=${encodeURIComponent(user.email)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch scans');
+        }
+
+        // Save to AppContext
+        setScanHistory(data);
+        setLoading(false);
+      } catch (err: any) {
+        console.error('Error fetching scans:', err.message);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchScans();
+  }, [user?.email, setScanHistory]);
+
+  // Calculate total points from scanHistory
   const totalPoints = scanHistory.reduce((sum, scan) => sum + scan.points, 0);
 
   return (
     <div className="container">
       <h2>My Points</h2>
+
+      {loading && <p>Loading scan history...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
       <div style={{
         border: '1px solid #ccc',
@@ -517,7 +553,7 @@ function ScannerPoints() {
         </thead>
         <tbody>
           {scanHistory.slice(0, 10).map((scan: any) => (
-            <tr key={scan.id}>
+            <tr key={scan._id}>
               <td>{scan.qrCodeId}</td>
               <td>{scan.points}</td>
               <td>{new Date(scan.timestamp).toLocaleString()}</td>
@@ -528,6 +564,7 @@ function ScannerPoints() {
     </div>
   );
 }
+
 
 
 
