@@ -1,11 +1,14 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 
 // Context definition
-const AppContext = createContext({
-  user: null as any,
-  setUser: (user: any) => {},
-  currentPage: 'login',
-  setCurrentPage: (page: string) => {}
+const AppContext = createContext<{
+  user: any;
+  setUser: (user: any) => void;
+  currentPage: string;
+  setCurrentPage: (page: string) => void;
+  scanHistory: any[];
+  setScanHistory: (history: any[]) => void;
+  
 });
 
 const API_BASE = 'https://qr-point-system.onrender.com';
