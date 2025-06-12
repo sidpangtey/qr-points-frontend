@@ -458,6 +458,76 @@ function AdminNavBar() {
   );
 }
 
+function ScannerNavBar() {
+  const { setCurrentPage, setUser } = useContext(AppContext);
+
+  return (
+    <div style={{
+      background: '#333',
+      color: '#fff',
+      padding: '10px',
+      marginBottom: '20px',
+      display: 'flex',
+      gap: '10px'
+    }}>
+      <button onClick={() => setCurrentPage('scanner-scan')} style={{ color: 'white' }}>
+        Scan QR Code
+      </button>
+      <button onClick={() => setCurrentPage('scanner-points')} style={{ color: 'white' }}>
+        My Points
+      </button>
+      <button onClick={() => {
+        setUser(null);
+        setCurrentPage('login');
+      }} style={{ marginLeft: 'auto', color: 'white' }}>
+        Logout
+      </button>
+    </div>
+  );
+}
+
+function ScannerPoints() {
+  const { scanHistory, user } = useContext(AppContext);
+
+  // Calculate total points
+  const totalPoints = scanHistory.reduce((sum, scan) => sum + scan.points, 0);
+
+  return (
+    <div className="container">
+      <h2>My Points</h2>
+
+      <div style={{
+        border: '1px solid #ccc',
+        padding: '1rem',
+        marginBottom: '1rem'
+      }}>
+        <h3>Total Points: {totalPoints}</h3>
+      </div>
+
+      <h3>Recent Scans:</h3>
+      <table border={1} cellPadding={8} style={{ width: '100%', marginTop: '10px' }}>
+        <thead>
+          <tr>
+            <th>QR Code ID</th>
+            <th>Points</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scanHistory.slice(0, 10).map((scan: any) => (
+            <tr key={scan.id}>
+              <td>{scan.qrCodeId}</td>
+              <td>{scan.points}</td>
+              <td>{new Date(scan.timestamp).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+
 
 
 
@@ -482,7 +552,7 @@ const renderPage = () => {
   if (user.role === 'admin') {
     return (
       <div>
-        <AdminNavBar />   {/* Add the AdminNavBar here */}
+        <AdminNavBar />
         {currentPage === 'admin-dashboard' && <AdminDashboard />}
         {currentPage === 'admin-qrcodes' && <AdminQRCodes />}
       </div>
@@ -491,12 +561,19 @@ const renderPage = () => {
 
   // Scanner flow
   if (user.role === 'scanner') {
-    return <ScannerScan />;
+    return (
+      <div>
+        <ScannerNavBar />
+        {currentPage === 'scanner-scan' && <ScannerScan />}
+        {currentPage === 'scanner-points' && <ScannerPoints />}
+      </div>
+    );
   }
 
   // Default fallback (should not happen)
   return <Login />;
 };
+
 
 
   return (
