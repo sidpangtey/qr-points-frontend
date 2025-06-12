@@ -444,7 +444,11 @@ function AdminQRCodes() {
           </select>
 
           <label>Points:</label>
-          <input type="number" value={points} onChange={(e) => setPoints(Number(e.target.value))} />
+          <input
+  type="number"
+  value={points}
+  onChange={(e) => setPoints(e.target.value ? Number(e.target.value) : 10)}
+/>
 
           <br />
           <button onClick={handleCreateQRCode}>Submit</button>
