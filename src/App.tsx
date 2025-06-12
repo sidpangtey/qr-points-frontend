@@ -426,34 +426,40 @@ function AdminQRCodes() {
         {showForm ? 'Hide Create Form' : 'Create QR Code'}
       </button>
 
-      {/* Create QR Code form */}
-      {showForm && (
-        <div style={{ marginBottom: '1rem', border: '1px solid #ccc', padding: '1rem' }}>
-          <h3>Create New QR Code</h3>
-          <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+     {/* Create QR Code form */}
+{showForm && (
+  <div style={{ marginBottom: '1rem', border: '1px solid #ccc', padding: '1rem' }}>
+    <h3>Create New QR Code</h3>
 
-          <label>Tags (comma-separated):</label>
-          <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
+    <label>Name:</label>
+    <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
 
-          <label>Give To:</label>
-          <select value={giveTo} onChange={(e) => setGiveTo(e.target.value as 'owner' | 'scanner' | 'both')}>
-            <option value="owner">Owner</option>
-            <option value="scanner">Scanner</option>
-            <option value="both">Both</option>
-          </select>
+    <label>Tags (comma-separated):</label>
+    <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
 
-          <label>Points:</label>
-          <input
-  type="number"
-  value={points}
-  onChange={(e) => setPoints(e.target.value ? Number(e.target.value) : 10)}
-/>
+    <label>Give To:</label>
+    <select value={giveTo} onChange={(e) => setGiveTo(e.target.value as 'owner' | 'scanner' | 'both')}>
+      <option value="owner">Owner</option>
+      <option value="scanner">Scanner</option>
+      <option value="both">Both</option>
+    </select>
 
-          <br />
-          <button onClick={handleCreateQRCode}>Submit</button>
-        </div>
-      )}
+    <label>Points:</label>
+    <input
+      type="number"
+      value={points === 0 ? '' : points}
+      onChange={(e) => {
+        const value = e.target.value;
+        // If empty → set to 0, else parse number
+        setPoints(value === '' ? 0 : Number(value));
+      }}
+    />
+
+    <br />
+    <button onClick={handleCreateQRCode}>Submit</button>
+  </div>
+)}
+
 
       {loading && <p>Loading QR Codes...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
