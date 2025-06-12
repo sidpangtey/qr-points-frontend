@@ -10,6 +10,7 @@ const AppContext = createContext<{
   setScanHistory: (history: any[]) => void,
 }>(null as any);
 
+
 const API_BASE = 'https://qr-point-system.onrender.com';
 
 function Login() {
@@ -227,30 +228,33 @@ function AdminDashboard() {
 
 
 function ScannerScan() {
-  const { user } = useContext(AppContext);
+  const { user, scanHistory, setScanHistory } = useContext(AppContext);
   const [qrCodeId, setQrCodeId] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const API_BASE = 'https://qr-point-system.onrender.com';
 
   const handleScan = async () => {
     if (!qrCodeId) {
-      alert('Please enter a QR Code ID');
+      alert('Please enter QR Code ID');
       return;
     }
 
     try {
+      if (!user?.email) {
+        alert('No user email found');
+        return;
+      }
+
       setLoading(true);
-      setError('');
-      setMessage('');
 
       const response = await fetch(`${API_BASE}/scan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          qrCodeId: qrCodeId,
+          qrCodeId,
           scannerEmail: user.email
         })
       });
@@ -261,35 +265,60 @@ function ScannerScan() {
         throw new Error(data.error || 'Scan failed');
       }
 
-      setMessage(data.message || 'Scan successful!');
+      setSuccessMessage(`Scanned successfully! +${data.pointsAwarded} points`);
       setQrCodeId('');
-    } catch (err: any) {
-      console.error('Scan error:', err.message);
-      setError(err.message);
-    } finally {
+
+      // After success → fetch latest scans → update scanHistory
+      await fetchLatestScans();
+
       setLoading(false);
+    } catch (err: any) {
+      console.error('Error scanning QR Code:', err.message);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const fetchLatestScans = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/scans?scannerEmail=${encodeURIComponent(user.email)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setScanHistory(data);
+      } else {
+        console.error('Failed to refresh scans:', data.error);
+      }
+    } catch (err: any) {
+      console.error('Error fetching latest scans:', err.message);
     }
   };
 
   return (
     <div className="container">
-      <h2>Scanner - Scan Page</h2>
+      <h2>Scan QR Code</h2>
 
-      <label>Enter QR Code ID:</label>
+      <label>QR Code ID:</label>
       <input
         type="text"
         value={qrCodeId}
         onChange={(e) => setQrCodeId(e.target.value)}
       />
-      <button onClick={handleScan} disabled={loading}>
+      <br />
+      <button onClick={handleScan} disabled={loading} style={{ marginTop: '1rem' }}>
         {loading ? 'Scanning...' : 'Scan'}
       </button>
 
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {successMessage && (
+        <p style={{ color: 'green', marginTop: '10px' }}>{successMessage}</p>
+      )}
+      {error && (
+        <p style={{ color: 'red', marginTop: '10px' }}>Error: {error}</p>
+      )}
     </div>
   );
 }
+
 
 function AdminQRCodes() {
   const [qrCodes, setQrCodes] = useState<any[]>([]);
