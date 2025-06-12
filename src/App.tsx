@@ -396,6 +396,27 @@ function AdminQRCodes() {
     }
   };
 
+  const handleDeleteQRCode = async (qrCodeId: string) => {
+    if (window.confirm('Are you sure you want to delete this QR Code?')) {
+      try {
+        const response = await fetch(`${API_BASE}/qrcodes/${qrCodeId}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('QR Code deleted');
+          // Refresh list
+          fetchQRCodes();
+        } else {
+          alert(`Error deleting QR Code: ${data.error}`);
+        }
+      } catch (err: any) {
+        alert(`Error deleting QR Code: ${err.message}`);
+      }
+    }
+  };
+
   return (
     <div className="container">
       <h2>QR Codes</h2>
@@ -442,6 +463,7 @@ function AdminQRCodes() {
             <th>Give To</th>
             <th>Points</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -453,6 +475,9 @@ function AdminQRCodes() {
               <td>{qr.giveTo}</td>
               <td>{qr.points}</td>
               <td>{qr.status}</td>
+              <td>
+                <button onClick={() => handleDeleteQRCode(qr._id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -460,6 +485,7 @@ function AdminQRCodes() {
     </div>
   );
 }
+
 
 function AdminNavBar() {
   const { setCurrentPage, setUser } = useContext(AppContext);
